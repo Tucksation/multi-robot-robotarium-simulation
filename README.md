@@ -76,9 +76,6 @@ Random obstacles are also generated within the simulation environment while avoi
 4. Adding dynamic obstacles
 5. Recording and analyzing robot trajectories
 
-##Author
-Lemark Santos
-
 ## Project Structure
 
 ```text
