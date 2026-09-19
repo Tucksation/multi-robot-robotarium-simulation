@@ -1,0 +1,97 @@
+Multi Robot Navigation System
+
+BEGIN
+
+#Intitialize robotarium simulator
+
+N = 4 robots
+
+Set initial_conditions
+
+#Grid initialization and obstacle placement
+
+Create Grid[16][10]
+
+FOR each cell in Grid
+	set cell = FREE
+END FOR
+
+obstacle_count = 0
+
+WHILE obstacle_count < 6
+	x = random(1, 16)
+	y = random(1, 10)
+
+	IF Grid(x, y) is FREE
+		Grid(x, y) = OBSTACLE
+		obstacle_count++
+	END IF
+END WHILE
+
+# Start/goal assignment for 4 robots
+
+FOR robot i = 1 to 4
+
+	Start_cell = A1 to A4
+	Goal_cell = B1 to B4
+
+	Start_cell ≠ obstacle
+	Goal_cell ≠ obstacle
+
+	Store start_cell and Goal_cell
+
+END FOR
+
+# A* Path Planning (per robot)
+
+FOR robot i = 1 to 4
+	path[i] = A_STAR(Grid, Start_cell, Goal_cell)
+END FOR
+
+#Waypoint generation 
+
+FOR robot i = 1 to 4
+	waypoints[i] = empty list
+
+	FOR each grid cell in path[i]
+		wx = cell_x * grid_scale
+        	wy = cell_y * grid_scale
+		add (wx, wy) to waypoints[i]
+	END FOR
+
+END FOR
+
+#Implement PID-based waypoint tracking using the unicycle model by:
+
+FOR each robot i
+	waypoint_index = 1
+END FOR
+
+WHILE simulation_running
+	poses = get_robot_positions()
+
+	FOR each robot i
+		target = waypoints[i][waypoint_index]
+
+        	dx = target.x - robot.x
+        	dy = target.y - robot.y
+
+        	distance_error = sqrt(dx² + dy²)
+        	heading_error = atan2(dy, dx) - robot.orientation
+
+        	linear_velocity = Kp_distance * distance_error
+        	angular_velocity = PID_heading_control(heading_error)
+
+        	set robot velocity(linear_velocity, angular_velocity)
+
+        	IF distance_error < tolerance
+			waypoint_index++
+       		END IF
+
+	END FOR
+	
+	step_simulation()
+
+END WHILE
+
+END
